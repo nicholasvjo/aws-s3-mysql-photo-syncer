@@ -8,13 +8,6 @@ from boto3.s3.transfer import S3UploadFailedError
 def get_s3_client():
     return boto3.client('s3')
 
-# def bucket_exists(bucket_name):
-#     s3 = get_s3_client()
-#     try:
-#         s3.head_bucket(Bucket=bucket_name)
-#         return True
-#     except s3.exceptions.NoSuchBucket:
-#         return False
     
 def upload_file_to_s3(s3_key: str, file_path: Path):
     s3 = get_s3_client()
@@ -40,7 +33,7 @@ def main(directory: Path, tenant_id: str):
             print(f"Skipping {file_path}, not a file.")
             continue
 
-        s3_key : str = get_file_s3_key(tenant_id, file_path.name)
+        s3_key : str = get_file_s3_key(file_path.name)
         upload_file_to_s3(s3_key, file_path)
 
 if __name__ == "__main__":
