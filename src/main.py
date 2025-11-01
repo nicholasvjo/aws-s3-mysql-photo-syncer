@@ -1,5 +1,6 @@
 from pathlib import Path
 from s3 import upload_file_to_s3
+from my_sql import test_connection
 
 def get_s3_key(file_name: str) -> str:
     # Example S3 key generation logic
@@ -21,12 +22,14 @@ def main(directory: Path, tenant_id: str):
 if __name__ == "__main__":
     import argparse
 
+    test_connection()
+
     parser = argparse.ArgumentParser(description="Upload files from a local directory to an S3 bucket.")
     parser.add_argument("directory", type=Path, help="Path to the local directory containing files to upload.")
-    parser.add_argument("tenant_id", type=str, help="Tenant ID to use in S3 key generation.")
 
-    args = parser.parse_args()
-    main(args.directory, args.tenant_id)
+
+    # args = parser.parse_args()
+    # main(args.directory, args.tenant_id)
 
 
     
