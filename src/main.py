@@ -1,6 +1,6 @@
 from pathlib import Path
 from s3 import upload_file_to_s3
-from my_sql import execute_update_query, get_update_query
+from my_sql import execute_update_query, get_update_query, test_connection
 import config
 import re
 import time
@@ -83,7 +83,12 @@ if __name__ == "__main__":
     parser.add_argument("directory", type=Path, help="Path to the local directory containing files to upload.")
     parser.add_argument("--pattern", type=str, help="Filename pattern with {user_id} placeholder, e.g., 'user_{user_id}_photo.jpg'.", default="{user_id}.jpg")
     parser.add_argument("--no-confirm", action='store_true', help="If set, skips the confirmation prompt before updating the database." )
+    parser.add_argument("--test-connection", action='store_true', help="If set, tests the MySQL connection and exits." )
     args = parser.parse_args()
+
+    if args.test_connection:
+        test_connection()
+        exit(0)
 
 
     main(args.directory, args.pattern, args.no_confirm)

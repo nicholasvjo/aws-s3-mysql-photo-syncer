@@ -11,7 +11,7 @@ AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
 
 # SSH Tunnel Configuration (Optional)
 SSH_HOST=os.getenv('SSH_HOST')
-SSH_PORT=os.getenv('SSH_PORT')
+SSH_PORT=int(os.getenv('SSH_PORT')) if os.getenv('SSH_PORT') else None
 SSH_USER=os.getenv('SSH_USER')
 SSH_KEY_PATH=os.getenv('SSH_KEY_PATH')
 

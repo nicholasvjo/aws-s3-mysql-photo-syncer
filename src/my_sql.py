@@ -6,11 +6,8 @@ from sshtunnel import SSHTunnelForwarder
 @contextmanager
 def get_mysql_connection():
     try:
-        with SSHTunnelForwarder(
-            ssh_address_or_host=(config.SSH_HOST, config.SSH_PORT),
-            ssh_username=config.SSH_USER,
-            ssh_pkey=config.SSH_KEY_PATH,
-        ):
+
+        if not config.shoud_use_ssh_tunnel():
             connection = mysql.connector.connect(
                 host=config.DB_HOST,
                 port=config.DB_PORT,
@@ -19,14 +16,28 @@ def get_mysql_connection():
                 database=config.DB_NAME
             )
             yield connection
+        else:
+            with SSHTunnelForwarder(
+                ssh_address_or_host=(config.SSH_HOST, config.SSH_PORT),
+                ssh_username=config.SSH_USER,
+                ssh_pkey=config.SSH_KEY_PATH,
+                remote_bind_address=(config.DB_HOST, config.DB_PORT),
+                local_bind_address=('127.0.0.1', 0)
+            ) as tunnel:
+                connection = mysql.connector.connect(
+                    host="127.0.0.1",
+                    port=tunnel.local_bind_port,
+                    user=config.DB_USER,
+                    password=config.DB_PASSWORD,
+                    database=config.DB_NAME
+                )
+                yield connection
     except mysql.connector.Error as err:
         print(f"Error opening MySQL connection: {err}")
         yield None
     finally:
         if connection and connection.is_connected():
             connection.close()
-
-    
 
 def test_connection():
     with get_mysql_connection() as conn:
