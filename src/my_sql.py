@@ -31,7 +31,7 @@ def test_connection():
 
 def get_update_query(ids_lenght: int) -> str:
     format_strings = ','.join(['%s'] * ids_lenght)
-    concat_photo_url = f"CONCAT('https://{config.BUCKET_NAME}.s3.us-east-1.amazonaws.com/{config.BUCKET_DIR}', id, '.jpg')"
+    concat_photo_url = f"CONCAT('https://{config.BUCKET_NAME}.s3.{config.AWS_REGION}.amazonaws.com/{config.BUCKET_DIR}', id, '.jpg')"
     query = f"UPDATE users SET foto = {concat_photo_url} WHERE id IN ({format_strings})"
     return query
 

@@ -7,6 +7,7 @@ load_dotenv()
 # S3 Configuration
 BUCKET_NAME = os.getenv('BUCKET_NAME', 'default-bucket-name')
 BUCKET_DIR = os.getenv('BUCKET_DIR', 'default/dir/')
+AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
 
 # MySQL Database Configuration
 DB_HOST = os.getenv('DB_HOST')
