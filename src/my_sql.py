@@ -1,25 +1,32 @@
 import mysql.connector
 import config
 from contextlib import contextmanager
+from sshtunnel import SSHTunnelForwarder
 
 @contextmanager
 def get_mysql_connection():
-
     try:
-        connection = mysql.connector.connect(
-            host=config.DB_HOST,
-            port=config.DB_PORT,
-            user=config.DB_USER,
-            password=config.DB_PASSWORD,
-            database=config.DB_NAME
-        )
-        yield connection
+        with SSHTunnelForwarder(
+            ssh_address_or_host=(config.SSH_HOST, config.SSH_PORT),
+            ssh_username=config.SSH_USER,
+            ssh_pkey=config.SSH_KEY_PATH,
+        ):
+            connection = mysql.connector.connect(
+                host=config.DB_HOST,
+                port=config.DB_PORT,
+                user=config.DB_USER,
+                password=config.DB_PASSWORD,
+                database=config.DB_NAME
+            )
+            yield connection
     except mysql.connector.Error as err:
         print(f"Error opening MySQL connection: {err}")
         yield None
     finally:
         if connection and connection.is_connected():
             connection.close()
+
+    
 
 def test_connection():
     with get_mysql_connection() as conn:
@@ -36,7 +43,6 @@ def get_update_query(ids_lenght: int) -> str:
     return query
 
 def execute_update_query(ids: set[int]):
-    
     with get_mysql_connection() as conn:
         cursor = conn.cursor()
         query = get_update_query(len(ids))
