@@ -28,3 +28,22 @@ def test_connection():
         now = cursor.fetchone()
         cursor.close()
         print("MySQL connected. Database time is:", now[0])
+
+def get_update_query(ids_lenght: int) -> str:
+    format_strings = ','.join(['%s'] * ids_lenght)
+    concat_photo_url = f"CONCAT('https://{config.BUCKET_NAME}.s3.us-east-1.amazonaws.com/{config.BUCKET_DIR}', id, '.jpg')"
+    query = f"UPDATE users SET foto = {concat_photo_url} WHERE id IN ({format_strings})"
+    return query
+
+def execute_update_query(ids: set[int]):
+    
+    with get_mysql_connection() as conn:
+        cursor = conn.cursor()
+        query = get_update_query(len(ids))
+        cursor.execute(query, params=tuple(ids))
+        conn.commit()
+        cursor.close()
+        print(f"Updated photo column for {cursor.rowcount} users.")
+
+
+    
