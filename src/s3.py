@@ -1,7 +1,7 @@
 import boto3
 from functools import lru_cache
 from pathlib import Path
-from constants import BUCKET_NAME
+from config import BUCKET_NAME
 from boto3.s3.transfer import S3UploadFailedError
 
 @lru_cache(maxsize=1)
